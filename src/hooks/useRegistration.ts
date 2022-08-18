@@ -9,9 +9,9 @@ export const useRegistration = () => {
   const [isCancelled, setIsCancelled] = useState(false);
   const [error, setError] = useState<null | string>(null);
   const [isPending, setIsPending] = useState(false);
-  const { setUser } = useAuthContext();
+  const { loginUser } = useAuthContext();
 
-  const registerUser = async (
+  const registerUserAsync = async (
     email: string,
     password: string,
     displayName: string
@@ -29,7 +29,7 @@ export const useRegistration = () => {
       await updateProfile(cred.user, { displayName });
 
       // set user context state
-      setUser(cred.user);
+      loginUser(cred.user);
 
       if (!isCancelled) {
         setIsPending(false);
@@ -49,5 +49,5 @@ export const useRegistration = () => {
     return () => setIsCancelled(true);
   }, []);
 
-  return { error, isPending, registerUser };
+  return { registerUserAsync, error, isPending };
 };

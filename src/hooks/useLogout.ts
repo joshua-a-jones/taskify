@@ -6,11 +6,11 @@ import { getErrorMessage } from "../utils/errorHandling";
 
 export const useLogout = () => {
   const [isCancelled, setIsCancelled] = useState(false);
-  const { setUser } = useAuthContext();
+  const { logoutUser } = useAuthContext();
   const [error, setError] = useState<null | string>(null);
   const [isPending, setIsPending] = useState(false);
 
-  const logoutUser = async () => {
+  const logoutUserAsync = async () => {
     setIsPending(true);
     setError(null);
 
@@ -19,7 +19,7 @@ export const useLogout = () => {
       await signOut(auth);
 
       //logout locally
-      setUser(null);
+      logoutUser();
 
       if (!isCancelled) {
         setIsPending(false);
@@ -38,5 +38,5 @@ export const useLogout = () => {
     return () => setIsCancelled(true);
   }, []);
 
-  return { logoutUser, error, isPending };
+  return { logoutUserAsync, error, isPending };
 };

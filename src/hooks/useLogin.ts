@@ -6,11 +6,11 @@ import { getErrorMessage } from "../utils/errorHandling";
 
 export const useLogin = () => {
   const [isCancelled, setIsCancelled] = useState(false);
-  const { setUser } = useAuthContext();
+  const { loginUser } = useAuthContext();
   const [error, setError] = useState<null | string>(null);
   const [isPending, setIsPending] = useState(false);
 
-  const loginUser = async (email: string, password: string) => {
+  const loginUserAsync = async (email: string, password: string) => {
     setIsCancelled(false);
     setIsPending(true);
     setError(null);
@@ -20,7 +20,7 @@ export const useLogin = () => {
       const cred = await signInWithEmailAndPassword(auth, email, password);
 
       //logout locally
-      setUser(cred.user);
+      loginUser(cred.user);
 
       if (!isCancelled) {
         setIsPending(false);
@@ -42,5 +42,5 @@ export const useLogin = () => {
     };
   }, []);
 
-  return { loginUser, error, isPending };
+  return { loginUserAsync, error, isPending };
 };

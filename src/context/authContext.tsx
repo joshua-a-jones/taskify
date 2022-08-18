@@ -6,7 +6,8 @@ import { onAuthStateChanged } from "firebase/auth";
 // type definitions
 interface IAuthContext {
   authState: IAuthState;
-  setUser: (user: FirebaseUser | null) => void;
+  loginUser: (user: FirebaseUser) => void;
+  logoutUser: () => void;
 }
 export interface IAuthState {
   user: FirebaseUser | null;
@@ -17,7 +18,8 @@ export interface AuthAction {
   payload: FirebaseUser | null;
 }
 export enum AuthActionTypes {
-  SET_USER,
+  LOGIN_USER,
+  LOGUT_USER,
   SET_AUTH_READY,
 }
 
@@ -27,8 +29,10 @@ export const AuthContext = createContext<null | IAuthContext>(null);
 // auth reducer
 export const authReducer = (state: IAuthState, action: AuthAction) => {
   switch (action.type) {
-    case AuthActionTypes.SET_USER:
+    case AuthActionTypes.LOGIN_USER:
       return { ...state, user: action.payload };
+    case AuthActionTypes.LOGUT_USER:
+      return { ...state, user: null };
     case AuthActionTypes.SET_AUTH_READY:
       return { ...state, user: action.payload, authIsReady: true };
     default:
@@ -46,8 +50,12 @@ export function AuthContextProvider({
     authIsReady: false,
   });
 
-  const setUser = (user: FirebaseUser | null) => {
-    authDispatch({ type: AuthActionTypes.SET_USER, payload: user });
+  const loginUser = (user: FirebaseUser) => {
+    authDispatch({ type: AuthActionTypes.LOGIN_USER, payload: user });
+  };
+
+  const logoutUser = () => {
+    authDispatch({ type: AuthActionTypes.LOGUT_USER, payload: null });
   };
 
   // this is to check and see if a user is currently logged in when application loads
@@ -65,7 +73,7 @@ export function AuthContextProvider({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ authState, setUser }}>
+    <AuthContext.Provider value={{ authState, loginUser, logoutUser }}>
       {children}
     </AuthContext.Provider>
   );
