@@ -2,7 +2,8 @@ import "./App.css";
 import { useAuthContext } from "./hooks/useAuthContext";
 
 function App() {
-  const { authIsReady, user } = useAuthContext();
+  const { authState } = useAuthContext();
+
   return <div className="App"></div>;
 }
 

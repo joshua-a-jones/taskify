@@ -5,8 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 
 // type definitions
 interface IAuthContext {
-  user: FirebaseUser | null;
-  authIsReady: boolean;
+  authState: IAuthState;
   setUser: (user: FirebaseUser | null) => void;
 }
 export interface IAuthState {
@@ -14,28 +13,28 @@ export interface IAuthState {
   authIsReady: boolean;
 }
 export interface AuthAction {
-  type: AuthActions;
+  type: AuthActionTypes;
   payload: FirebaseUser | null;
 }
-export enum AuthActions {
+export enum AuthActionTypes {
   SET_USER,
   SET_AUTH_READY,
 }
 
+// context and context provider
+export const AuthContext = createContext<null | IAuthContext>(null);
+
 // auth reducer
 export const authReducer = (state: IAuthState, action: AuthAction) => {
   switch (action.type) {
-    case AuthActions.SET_USER:
+    case AuthActionTypes.SET_USER:
       return { ...state, user: action.payload };
-    case AuthActions.SET_AUTH_READY:
+    case AuthActionTypes.SET_AUTH_READY:
       return { ...state, user: action.payload, authIsReady: true };
     default:
       return state;
   }
 };
-
-// context and context provider
-export const AuthContext = createContext<null | IAuthContext>(null);
 
 export function AuthContextProvider({
   children,
@@ -48,7 +47,7 @@ export function AuthContextProvider({
   });
 
   const setUser = (user: FirebaseUser | null) => {
-    authDispatch({ type: AuthActions.SET_USER, payload: user });
+    authDispatch({ type: AuthActionTypes.SET_USER, payload: user });
   };
 
   // this is to check and see if a user is currently logged in when application loads
@@ -57,7 +56,7 @@ export function AuthContextProvider({
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       authDispatch({
-        type: AuthActions.SET_AUTH_READY,
+        type: AuthActionTypes.SET_AUTH_READY,
         payload: user,
       });
 
@@ -66,7 +65,7 @@ export function AuthContextProvider({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ ...authState, setUser }}>
+    <AuthContext.Provider value={{ authState, setUser }}>
       {children}
     </AuthContext.Provider>
   );
